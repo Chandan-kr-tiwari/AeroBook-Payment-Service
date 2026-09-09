@@ -1,7 +1,7 @@
 'use strict';
 
 const { Model } = require('sequelize');
-const {Enums} = require('../utils/common/enums')
+const {Enums} = require('../utils/common/')
 
 const {INITIATED , SUCCESS , FAILED , REFUNDED} = Enums.PAYMENT_STATUS
 
