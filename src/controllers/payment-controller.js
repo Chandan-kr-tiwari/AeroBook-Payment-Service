@@ -30,6 +30,31 @@ async function createPayment(req, res) {
     }
 }
 
+async function verifyPayment(req, res) {
+    console.log("🔥 VERIFY PAYMENT ROUTE HIT");
+    console.log("VERIFY BODY:", req.body);
+
+    try {
+        const response = await paymentService.verifyPayment(req.body);
+
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            message: 'Payment verified successfully',
+            data: response
+        });
+
+    } catch (error) {
+        console.log('PAYMENT VERIFICATION ERROR:', error.message);
+
+        return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: error.message,
+            data: {}
+        });
+    }
+}
+
 module.exports = {
-    createPayment
+    createPayment,
+    verifyPayment
 };
