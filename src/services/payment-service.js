@@ -2,6 +2,7 @@ const axios = require('axios');
 const PaymentRepository = require('../repositories/payment-repository');
 const { Enums } = require('../utils/common');
 const { Razorpay } = require('../utils/helpers/razorpay');
+const {PublishEvent} = require('../events')
 const crypto = require('crypto');
 
 class PaymentService {
@@ -98,7 +99,17 @@ class PaymentService {
         // 2. Confirm booking
         await axios.patch(
             `${process.env.AEROBOOK_BOOKING_SERVICE}/api/v1/bookings/${payment.bookingId}/confirm`
-        );
+        ); 
+         // 3. Publish payment successful event
+        PublishEvent('payment.successful', {
+        paymentId: payment.id,
+        bookingId: payment.bookingId,
+        userId: payment.userId,
+        amount: payment.amount,
+        provider: 'RAZORPAY',
+        providerPaymentId: razorpay_payment_id
+    });
+
 
         return payment;
     }
