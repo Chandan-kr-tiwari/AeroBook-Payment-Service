@@ -1,7 +1,5 @@
 const express = require('express');
 
-
-
 const paymentRoutes = require('./payment');
 
 const router = express.Router();

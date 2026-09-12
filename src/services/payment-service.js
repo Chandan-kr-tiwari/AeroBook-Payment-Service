@@ -113,6 +113,54 @@ class PaymentService {
 
         return payment;
     }
+
+    async refundPayment(data) {
+    const { bookingId } = data;
+
+    const payment =
+        await this.paymentRepository.findByBookingId(bookingId);
+
+    if (!payment) {
+        throw new Error('Payment not found');
+    }
+
+    if (payment.status !== Enums.PAYMENT_STATUS.SUCCESS) {
+        throw new Error('Payment is not eligible for refund');
+    }
+
+    if (!payment.providerPaymentId) {
+        throw new Error('Payment ID not found');
+    }
+
+    // Refund through Razorpay
+    const refund = await Razorpay.payments.refund(
+        payment.providerPaymentId,
+        {
+            amount: payment.amount * 100
+        }
+    );
+
+    // Update payment status
+    await payment.update({
+        status: Enums.PAYMENT_STATUS.REFUNDED
+    });
+
+    // Publish refund event
+    PublishEvent('payment.refunded', {
+        paymentId: payment.id,
+        bookingId: payment.bookingId,
+        userId: payment.userId,
+        amount: payment.amount,
+        provider: 'RAZORPAY',
+        providerPaymentId: payment.providerPaymentId,
+        refundId: refund.id
+    });
+
+    return {
+        payment,
+        refund
+    };
+}
 }
 
 module.exports = PaymentService;

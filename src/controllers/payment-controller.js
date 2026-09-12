@@ -1,5 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const PaymentService = require('../services/payment-service');
+const { success, data } = require('../utils/common/error-response');
 
 const paymentService = new PaymentService()
 
@@ -54,7 +55,27 @@ async function verifyPayment(req, res) {
     }
 }
 
+ async function refundPayment(req,res){
+    try {
+        const response = await paymentService.refundPayment({bookingId:req.params.bookingId});
+        return res.status(StatusCodes.OK).json({
+            success:true,
+            message:'Payment Refunded Successfully',
+            data:response
+        })
+    } catch (error) {
+         return res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: error.message,
+            data: {}
+        });
+    }
+ }
+
+
+
 module.exports = {
     createPayment,
-    verifyPayment
+    verifyPayment,
+    refundPayment
 };
