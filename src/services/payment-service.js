@@ -11,7 +11,7 @@ class PaymentService {
     }
 
     async createPayment(data) {
-        const { bookingId } = data;
+        const { bookingId , userId } = data;
 
         // Get booking information from Booking Service
         const response = await fetch(
@@ -30,6 +30,13 @@ class PaymentService {
             throw new Error('Payment is not allowed for this booking');
         }
 
+          // Check booking ownership
+        if (booking.userId !== userId) {
+        throw new Error(
+            'You are not authorized to make payment for this booking'
+        );
+    }
+
         // Check if payment already exists
         const existingPayment =
             await this.paymentRepository.findByBookingId(bookingId);
@@ -46,7 +53,7 @@ class PaymentService {
 
         const payment = await this.paymentRepository.create({
             bookingId: booking.id,
-            userId: booking.userId,
+            userId:userId,
             amount: booking.totalCost,
             status: Enums.PAYMENT_STATUS.INITIATED,
             provider: 'RAZORPAY',

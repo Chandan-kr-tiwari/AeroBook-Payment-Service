@@ -7,7 +7,8 @@ const paymentService = new PaymentService()
 async function createPayment(req, res) {
     try {
         const response = await paymentService.createPayment({
-            bookingId: req.body.bookingId
+            bookingId: req.body.bookingId,
+            userId:req.user.id
         });
 
         return res
