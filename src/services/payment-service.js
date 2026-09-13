@@ -10,14 +10,19 @@ class PaymentService {
         this.paymentRepository = new PaymentRepository();
     }
 
-    async createPayment(data) {
+    async createPayment(data ,token) {
         const { bookingId , userId } = data;
 
+       
         // Get booking information from Booking Service
-        const response = await fetch(
-            `${process.env.AEROBOOK_BOOKING_SERVICE}/api/v1/bookings/${bookingId}`
-        );
-
+const response = await fetch(
+    `${process.env.AEROBOOK_BOOKING_SERVICE}/api/v1/bookings/${bookingId}`,
+    {
+        headers: {
+            Authorization: token
+        }
+    }
+);
         if (!response.ok) {
             throw new Error('Unable to fetch booking');
         }
@@ -66,7 +71,7 @@ class PaymentService {
         };
     }
 
-    async verifyPayment(data) {
+    async verifyPayment(data ,token) {
         const {
             razorpay_order_id,
             razorpay_payment_id,
@@ -103,10 +108,20 @@ class PaymentService {
             status: Enums.PAYMENT_STATUS.SUCCESS
         });
 
-        // 2. Confirm booking
+        // // 2. Confirm booking
+        // await axios.patch(
+        //     `${process.env.AEROBOOK_BOOKING_SERVICE}/api/v1/bookings/${payment.bookingId}/confirm`
+        // ); 
+
         await axios.patch(
-            `${process.env.AEROBOOK_BOOKING_SERVICE}/api/v1/bookings/${payment.bookingId}/confirm`
-        ); 
+    `${process.env.AEROBOOK_BOOKING_SERVICE}/api/v1/bookings/${payment.bookingId}/confirm`,
+    {},
+    {
+        headers: {
+            Authorization: token
+        }
+    }
+);
          // 3. Publish payment successful event
         PublishEvent('payment.successful', {
         paymentId: payment.id,

@@ -9,7 +9,7 @@ async function createPayment(req, res) {
         const response = await paymentService.createPayment({
             bookingId: req.body.bookingId,
             userId:req.user.id
-        });
+        },  req.headers.authorization);
 
         return res
             .status(StatusCodes.CREATED)
@@ -21,6 +21,9 @@ async function createPayment(req, res) {
 
     } catch (error) {
         console.log('PAYMENT CONTROLLER ERROR:', error.message);
+        console.log("PAYMENT ERROR MESSAGE:", error.message);
+    console.log("PAYMENT ERROR CAUSE:", error.cause);
+    console.log("PAYMENT ERROR STACK:", error.stack);
 
         return res
             .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
@@ -37,7 +40,7 @@ async function verifyPayment(req, res) {
     console.log("VERIFY BODY:", req.body);
 
     try {
-        const response = await paymentService.verifyPayment(req.body);
+        const response = await paymentService.verifyPayment(req.body, req.headers.authorization);
 
         return res.status(StatusCodes.OK).json({
             success: true,
