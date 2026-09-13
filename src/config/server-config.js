@@ -9,5 +9,7 @@ module.exports = {
     AEROBOOK_BOOKING_SERVICE: process.env.AEROBOOK_BOOKING_SERVICE,
     RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
     RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
-    RABBITMQ_URL: process.env.RABBITMQ_URL
+    RABBITMQ_URL: process.env.RABBITMQ_URL,
+    JWT_SECRET:process.env.JWT_SECRET,
+    JWT_EXPIRES_IN:process.env.JWT_EXPIRES_IN
 }
